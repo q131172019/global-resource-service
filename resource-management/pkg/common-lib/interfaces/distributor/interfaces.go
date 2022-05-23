@@ -1,4 +1,4 @@
-package distributor
+package commonlib_distributor
 
 import (
 	"global-resource-service/resource-management/pkg/common-lib/types"

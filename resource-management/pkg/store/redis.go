@@ -3,7 +3,8 @@ package goredis
 import (
 	"context"
 	"encoding/json"
-	"fmt"
+
+	"k8s.io/klog/v2"
 
 	"global-resource-service/resource-management/pkg/common-lib/interfaces/store"
 	"global-resource-service/resource-management/pkg/common-lib/types"
@@ -116,7 +117,8 @@ func (gr *Goredis) GetNodes() []*types.LogicalNode {
 			err = json.Unmarshal(bytes, &LogicalNode)
 
 			if err != nil {
-				fmt.Println("Error from JSON Unmarshal for LogicalNode:", err)
+				klog.Errorf("Error from JSON Unmarshal for LogicalNode:", err)
+				return nil
 			}
 
 			LogicalNodes[i] = LogicalNode
@@ -143,7 +145,8 @@ func (gr *Goredis) GetNodeStoreStatus() *store.NodeStoreStatus {
 		err = json.Unmarshal(b, &NodeStoreStatus)
 
 		if err != nil {
-			fmt.Println("Error from JSON Unmarshal for NodeStoreStatus:", err)
+			klog.Errorf("Error from JSON Unmarshal for NodeStoreStatus:", err)
+			return nil
 		}
 	}
 
@@ -166,7 +169,8 @@ func (gr *Goredis) GetVirtualNodesAssignments() *store.VirtualNodeAssignment {
 		err = json.Unmarshal(b, &VirtualNodeAssignment)
 
 		if err != nil {
-			fmt.Println("Error from JSON Unmarshal for VirtualNodeAssignment:", err)
+			klog.Errorf("Error from JSON Unmarshal for VirtualNodeAssignment:", err)
+			return nil
 		}
 	}
 

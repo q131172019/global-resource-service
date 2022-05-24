@@ -47,13 +47,17 @@ func (gr *Goredis) PersistNodes(LogicalNodes []*types.LogicalNode) bool {
 		LogicalNodeBytes, err := json.Marshal(LogicalNode)
 
 		if err != nil {
-			panic(err)
+			klog.Errorf("Error from JSON Marshal for Logical Nodes:", err)
+			return false
+			//panic(err)
 		}
 
 		err = gr.client.Set(gr.ctx, LogicalNodeKey, LogicalNodeBytes, 0).Err()
 
 		if err != nil {
-			panic(err)
+			klog.Errorf("Error to persist Logical Nodes to Redis Store:", err)
+			return false
+			//panic(err)
 		}
 	}
 
@@ -66,13 +70,15 @@ func (gr *Goredis) PersistNodeStoreStatus(NodeStoreStatus *store.NodeStoreStatus
 	NodeStoreStatusBytes, err := json.Marshal(NodeStoreStatus)
 
 	if err != nil {
-		panic(err)
+		klog.Errorf("Error from JSON Marshal for Node Store Status:", err)
+		return false
 	}
 
 	err = gr.client.Set(gr.ctx, NodeStoreStatus.GetKey(), NodeStoreStatusBytes, 0).Err()
 
 	if err != nil {
-		panic(err)
+		klog.Errorf("Error to persist Node Store Status to Redis Store:", err)
+		return false
 	}
 
 	return true
@@ -84,13 +90,15 @@ func (gr *Goredis) PersistVirtualNodesAssignments(VirtualNodeAssignment *store.V
 	VirtualNodeAssignmentBytes, err := json.Marshal(VirtualNodeAssignment)
 
 	if err != nil {
-		panic(err)
+		klog.Errorf("Error from JSON Marshal for Virtual Node Assignment:", err)
+		return false
 	}
 
 	err = gr.client.Set(gr.ctx, VirtualNodeAssignment.GetKey(), VirtualNodeAssignmentBytes, 0).Err()
 
 	if err != nil {
-		panic(err)
+		klog.Errorf("Error to persist Virtual Node Assignment to Redis Store:", err)
+		return false
 	}
 
 	return true
@@ -109,7 +117,8 @@ func (gr *Goredis) GetNodes() []*types.LogicalNode {
 		value, err := gr.client.Get(gr.ctx, LogicalNodeKey).Result()
 
 		if err != nil {
-			panic(err)
+			klog.Errorf("Error to get LogicalNode from Redis Store:", err)
+			return nil
 		}
 
 		if err != redis.Nil {
@@ -137,7 +146,8 @@ func (gr *Goredis) GetNodeStoreStatus() *store.NodeStoreStatus {
 	value, err := gr.client.Get(gr.ctx, NodeStoreStatus.GetKey()).Result()
 
 	if err != nil {
-		panic(err)
+		klog.Errorf("Error to get NodeStoreStatus from Redis Store:", err)
+		return nil
 	}
 
 	if err != redis.Nil {
@@ -161,7 +171,8 @@ func (gr *Goredis) GetVirtualNodesAssignments() *store.VirtualNodeAssignment {
 	value, err := gr.client.Get(gr.ctx, VirtualNodeAssignment.GetKey()).Result()
 
 	if err != nil {
-		panic(err)
+		klog.Errorf("Error to get VirtualNodeAssignment from Redis Store:", err)
+		return nil
 	}
 
 	if err != redis.Nil {

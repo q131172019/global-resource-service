@@ -151,8 +151,8 @@ func (gr *Goredis) GetNodeStoreStatus() *store.NodeStoreStatus {
 	}
 
 	if err != redis.Nil {
-		b := []byte(value)
-		err = json.Unmarshal(b, &NodeStoreStatus)
+		bytes := []byte(value)
+		err = json.Unmarshal(bytes, &NodeStoreStatus)
 
 		if err != nil {
 			klog.Errorf("Error from JSON Unmarshal for NodeStoreStatus:", err)
@@ -176,8 +176,8 @@ func (gr *Goredis) GetVirtualNodesAssignments() *store.VirtualNodeAssignment {
 	}
 
 	if err != redis.Nil {
-		b := []byte(value)
-		err = json.Unmarshal(b, &VirtualNodeAssignment)
+		bytes := []byte(value)
+		err = json.Unmarshal(bytes, &VirtualNodeAssignment)
 
 		if err != nil {
 			klog.Errorf("Error from JSON Unmarshal for VirtualNodeAssignment:", err)

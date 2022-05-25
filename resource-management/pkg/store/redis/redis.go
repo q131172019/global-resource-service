@@ -1,4 +1,4 @@
-package goredis
+package redis
 
 import (
 	"context"
@@ -41,6 +41,7 @@ const (
 // Use Redis data type - Set to store Logical Nodes
 // One key has one record
 //
+// Note: Need re-visit these codes to see whether using function pointer is much better
 func (gr *Goredis) PersistNodes(LogicalNodes []*types.LogicalNode) bool {
 	for _, LogicalNode := range LogicalNodes {
 		LogicalNodeKey := PreserveNode_KeyPrefix + LogicalNode.GetKey()

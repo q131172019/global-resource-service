@@ -34,17 +34,13 @@ func NewRedisClient() *Goredis {
 	}
 }
 
-const (
-	PreserveNode_KeyPrefix = "MinNode"
-)
-
 // Use Redis data type - Set to store Logical Nodes
 // One key has one record
 //
 // Note: Need re-visit these codes to see whether using function pointer is much better
 func (gr *Goredis) PersistNodes(LogicalNodes []*types.LogicalNode) bool {
 	for _, LogicalNode := range LogicalNodes {
-		LogicalNodeKey := PreserveNode_KeyPrefix + LogicalNode.GetKey()
+		LogicalNodeKey := types.PreserveNode_KeyPrefix + LogicalNode.GetKey()
 		LogicalNodeBytes, err := json.Marshal(LogicalNode)
 
 		if err != nil {
@@ -108,7 +104,7 @@ func (gr *Goredis) PersistVirtualNodesAssignments(VirtualNodeAssignment *store.V
 //
 // Note: Need re-visit these codes to see whether using function pointer is much better
 func (gr *Goredis) GetNodes() []*types.LogicalNode {
-	Keys := gr.client.Keys(gr.ctx, PreserveNode_KeyPrefix).Val()
+	Keys := gr.client.Keys(gr.ctx, types.PreserveNode_KeyPrefix).Val()
 
 	LogicalNodes := make([]*types.LogicalNode, len(Keys))
 

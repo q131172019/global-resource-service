@@ -50,7 +50,6 @@ func (gr *Goredis) PersistNodes(LogicalNodes []*types.LogicalNode) bool {
 		if err != nil {
 			klog.Errorf("Error from JSON Marshal for Logical Nodes:", err)
 			return false
-			//panic(err)
 		}
 
 		err = gr.client.Set(gr.ctx, LogicalNodeKey, LogicalNodeBytes, 0).Err()
@@ -58,7 +57,6 @@ func (gr *Goredis) PersistNodes(LogicalNodes []*types.LogicalNode) bool {
 		if err != nil {
 			klog.Errorf("Error to persist Logical Nodes to Redis Store:", err)
 			return false
-			//panic(err)
 		}
 	}
 
@@ -107,6 +105,8 @@ func (gr *Goredis) PersistVirtualNodesAssignments(VirtualNodeAssignment *store.V
 
 // Get all Logical Nodes based on PreserveNode_KeyPrefix = "MinNode"
 //
+//
+// Note: Need re-visit these codes to see whether using function pointer is much better
 func (gr *Goredis) GetNodes() []*types.LogicalNode {
 	Keys := gr.client.Keys(gr.ctx, PreserveNode_KeyPrefix).Val()
 

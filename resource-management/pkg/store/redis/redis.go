@@ -136,7 +136,6 @@ func (gr *Goredis) GetNodes() []*types.LogicalNode {
 			}
 
 			logicalNodes[i] = logicalNode
-
 		}
 	}
 
@@ -146,34 +145,34 @@ func (gr *Goredis) GetNodes() []*types.LogicalNode {
 // Get Node Store Status
 //
 func (gr *Goredis) GetNodeStoreStatus() *store.NodeStoreStatus {
-	var NodeStoreStatus *store.NodeStoreStatus
+	var nodeStoreStatus *store.NodeStoreStatus
 
-	value, err := gr.client.Get(gr.ctx, NodeStoreStatus.GetKey()).Result()
+	value, err := gr.client.Get(gr.ctx, nodeStoreStatus.GetKey()).Result()
 
 	if err != nil {
-		klog.Errorf("Error to get NodeStoreStatus from Redis Store:", err)
+		klog.Errorf("Error to get nodeStoreStatus from Redis Store:", err)
 		return nil
 	}
 
 	if err != redis.Nil {
 		bytes := []byte(value)
-		err = json.Unmarshal(bytes, &NodeStoreStatus)
+		err = json.Unmarshal(bytes, &nodeStoreStatus)
 
 		if err != nil {
-			klog.Errorf("Error from JSON Unmarshal for NodeStoreStatus:", err)
+			klog.Errorf("Error from JSON Unmarshal for nodeStoreStatus:", err)
 			return nil
 		}
 	}
 
-	return NodeStoreStatus
+	return nodeStoreStatus
 }
 
 // Get Virtual Nodes Assignments
 //
 func (gr *Goredis) GetVirtualNodesAssignments() *store.VirtualNodeAssignment {
-	var VirtualNodeAssignment *store.VirtualNodeAssignment
+	var virtualNodeAssignment *store.VirtualNodeAssignment
 
-	value, err := gr.client.Get(gr.ctx, VirtualNodeAssignment.GetKey()).Result()
+	value, err := gr.client.Get(gr.ctx, virtualNodeAssignment.GetKey()).Result()
 
 	if err != nil {
 		klog.Errorf("Error to get VirtualNodeAssignment from Redis Store:", err)
@@ -182,7 +181,7 @@ func (gr *Goredis) GetVirtualNodesAssignments() *store.VirtualNodeAssignment {
 
 	if err != redis.Nil {
 		bytes := []byte(value)
-		err = json.Unmarshal(bytes, &VirtualNodeAssignment)
+		err = json.Unmarshal(bytes, &virtualNodeAssignment)
 
 		if err != nil {
 			klog.Errorf("Error from JSON Unmarshal for VirtualNodeAssignment:", err)
@@ -190,5 +189,5 @@ func (gr *Goredis) GetVirtualNodesAssignments() *store.VirtualNodeAssignment {
 		}
 	}
 
-	return VirtualNodeAssignment
+	return virtualNodeAssignment
 }

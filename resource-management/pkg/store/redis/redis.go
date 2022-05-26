@@ -38,17 +38,25 @@ func NewRedisClient() *Goredis {
 // One key has one record
 //
 // Note: Need re-visit these codes to see whether using function pointer is much better
-func (gr *Goredis) PersistNodes(LogicalNodes []*types.LogicalNode) bool {
-	for _, LogicalNode := range LogicalNodes {
-		LogicalNodeKey := types.PreserveNode_KeyPrefix + LogicalNode.GetKey()
-		LogicalNodeBytes, err := json.Marshal(LogicalNode)
+//
+// TODO: Error handling for loop persistence failure in the middle
+//
+func (gr *Goredis) PersistNodes(logicalNodes []*types.LogicalNode) bool {
+	if logicalNodes == nil {
+		klog.Errorf("The array of Logical Nodes is nil")
+		return false
+	}
+
+	for _, logicalNode := range logicalNodes {
+		logicalNodeKey := logicalNode.GetKey()
+		logicalNodeBytes, err := json.Marshal(logicalNode)
 
 		if err != nil {
 			klog.Errorf("Error from JSON Marshal for Logical Nodes:", err)
 			return false
 		}
 
-		err = gr.client.Set(gr.ctx, LogicalNodeKey, LogicalNodeBytes, 0).Err()
+		err = gr.client.Set(gr.ctx, logicalNodeKey, logicalNodeBytes, 0).Err()
 
 		if err != nil {
 			klog.Errorf("Error to persist Logical Nodes to Redis Store:", err)
@@ -61,15 +69,15 @@ func (gr *Goredis) PersistNodes(LogicalNodes []*types.LogicalNode) bool {
 
 // Use Redis data type - String to store Node Store Status
 //
-func (gr *Goredis) PersistNodeStoreStatus(NodeStoreStatus *store.NodeStoreStatus) bool {
-	NodeStoreStatusBytes, err := json.Marshal(NodeStoreStatus)
+func (gr *Goredis) PersistNodeStoreStatus(nodeStoreStatus *store.NodeStoreStatus) bool {
+	nodeStoreStatusBytes, err := json.Marshal(nodeStoreStatus)
 
 	if err != nil {
 		klog.Errorf("Error from JSON Marshal for Node Store Status:", err)
 		return false
 	}
 
-	err = gr.client.Set(gr.ctx, NodeStoreStatus.GetKey(), NodeStoreStatusBytes, 0).Err()
+	err = gr.client.Set(gr.ctx, nodeStoreStatus.GetKey(), nodeStoreStatusBytes, 0).Err()
 
 	if err != nil {
 		klog.Errorf("Error to persist Node Store Status to Redis Store:", err)
@@ -81,15 +89,15 @@ func (gr *Goredis) PersistNodeStoreStatus(NodeStoreStatus *store.NodeStoreStatus
 
 // Use Redis data type - String to store Virtual Node Assignment
 //
-func (gr *Goredis) PersistVirtualNodesAssignments(VirtualNodeAssignment *store.VirtualNodeAssignment) bool {
-	VirtualNodeAssignmentBytes, err := json.Marshal(VirtualNodeAssignment)
+func (gr *Goredis) PersistVirtualNodesAssignments(virtualNodeAssignment *store.VirtualNodeAssignment) bool {
+	virtualNodeAssignmentBytes, err := json.Marshal(virtualNodeAssignment)
 
 	if err != nil {
 		klog.Errorf("Error from JSON Marshal for Virtual Node Assignment:", err)
 		return false
 	}
 
-	err = gr.client.Set(gr.ctx, VirtualNodeAssignment.GetKey(), VirtualNodeAssignmentBytes, 0).Err()
+	err = gr.client.Set(gr.ctx, virtualNodeAssignment.GetKey(), virtualNodeAssignmentBytes, 0).Err()
 
 	if err != nil {
 		klog.Errorf("Error to persist Virtual Node Assignment to Redis Store:", err)
@@ -104,14 +112,14 @@ func (gr *Goredis) PersistVirtualNodesAssignments(VirtualNodeAssignment *store.V
 //
 // Note: Need re-visit these codes to see whether using function pointer is much better
 func (gr *Goredis) GetNodes() []*types.LogicalNode {
-	Keys := gr.client.Keys(gr.ctx, types.PreserveNode_KeyPrefix).Val()
+	keys := gr.client.Keys(gr.ctx, types.PreserveNode_KeyPrefix).Val()
 
-	LogicalNodes := make([]*types.LogicalNode, len(Keys))
+	logicalNodes := make([]*types.LogicalNode, len(keys))
 
-	var LogicalNode *types.LogicalNode
+	var logicalNode *types.LogicalNode
 
-	for i, LogicalNodeKey := range Keys {
-		value, err := gr.client.Get(gr.ctx, LogicalNodeKey).Result()
+	for i, logicalNodeKey := range keys {
+		value, err := gr.client.Get(gr.ctx, logicalNodeKey).Result()
 
 		if err != nil {
 			klog.Errorf("Error to get LogicalNode from Redis Store:", err)
@@ -120,19 +128,19 @@ func (gr *Goredis) GetNodes() []*types.LogicalNode {
 
 		if err != redis.Nil {
 			bytes := []byte(value)
-			err = json.Unmarshal(bytes, &LogicalNode)
+			err = json.Unmarshal(bytes, &logicalNode)
 
 			if err != nil {
 				klog.Errorf("Error from JSON Unmarshal for LogicalNode:", err)
 				return nil
 			}
 
-			LogicalNodes[i] = LogicalNode
+			logicalNodes[i] = logicalNode
 
 		}
 	}
 
-	return LogicalNodes
+	return logicalNodes
 }
 
 // Get Node Store Status

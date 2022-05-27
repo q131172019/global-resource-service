@@ -39,11 +39,11 @@ func TestPersistNodes(t *testing.T) {
 	testCases := make([]*types.LogicalNode, 1)
 
 	var testCase0 = &types.LogicalNode{
-		Id:              "00",
-		ResourceVersion: "00",
+		Id:              "0001",
+		ResourceVersion: "0002",
 		GeoInfo: types.NodeGeoInfo{
-			Region:            0000,
-			ResourcePartition: 0000,
+			Region:            1000,
+			ResourcePartition: 1000,
 		},
 		Conditions:  255,
 		Reserved:    true,

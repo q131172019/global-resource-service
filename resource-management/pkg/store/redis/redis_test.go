@@ -7,6 +7,10 @@ import (
 
 var GR *Goredis
 
+func init() {
+	GR = NewRedisClient()
+}
+
 func TestNewRedisClient(t *testing.T) {
 	GR = NewRedisClient()
 }

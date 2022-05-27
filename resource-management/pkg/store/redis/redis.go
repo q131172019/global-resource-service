@@ -34,6 +34,48 @@ func NewRedisClient() *Goredis {
 	}
 }
 
+// To Test Persist Simple String
+//
+func (gr *Goredis) setString(myKey, myValue string) bool {
+	if len(myKey) == 0 || len(myValue) == 0 {
+		klog.Errorf("The Key or Value is blank")
+		return false
+	}
+
+	err := gr.client.Set(gr.ctx, myKey, []byte(myValue), 0).Err()
+
+	if err != nil {
+		klog.Errorf("Error to persist String key and Value to Redis Store:", err)
+		return false
+	}
+
+	return true
+}
+
+// To Test Get Simple String
+//
+func (gr *Goredis) getString(myKey string) string {
+	var myValue string
+
+	if len(myKey) == 0 {
+		klog.Errorf("The Key is blank")
+		return ""
+	}
+
+	value, err := gr.client.Get(gr.ctx, myKey).Bytes()
+
+	if err != nil {
+		klog.Errorf("Error to get String Key from Redis Store:", err)
+		return ""
+	}
+
+	if err != redis.Nil {
+		myValue = string(value)
+	}
+
+	return myValue
+}
+
 // Use Redis data type - Set to store Logical Nodes
 // One key has one record
 //
@@ -112,14 +154,14 @@ func (gr *Goredis) PersistVirtualNodesAssignments(virtualNodeAssignment *store.V
 // Note: Need re-visit these codes to see whether using function pointer is much better
 //
 func (gr *Goredis) GetNodes() []*types.LogicalNode {
-	keys := gr.client.Keys(gr.ctx, types.PreserveNode_KeyPrefix).Val()
+	keys := gr.client.Keys(gr.ctx, types.PreserveNode_KeyPrefix+"*").Val()
 
 	logicalNodes := make([]*types.LogicalNode, len(keys))
 
 	var logicalNode *types.LogicalNode
 
 	for i, logicalNodeKey := range keys {
-		value, err := gr.client.Get(gr.ctx, logicalNodeKey).Result()
+		value, err := gr.client.Get(gr.ctx, logicalNodeKey).Bytes()
 
 		if err != nil {
 			klog.Errorf("Error to get LogicalNode from Redis Store:", err)
@@ -127,8 +169,7 @@ func (gr *Goredis) GetNodes() []*types.LogicalNode {
 		}
 
 		if err != redis.Nil {
-			bytes := []byte(value)
-			err = json.Unmarshal(bytes, &logicalNode)
+			err = json.Unmarshal(value, &logicalNode)
 
 			if err != nil {
 				klog.Errorf("Error from JSON Unmarshal for LogicalNode:", err)

@@ -37,9 +37,13 @@ func TestPersistNodes(t *testing.T) {
 	var testCase0 = &types.LogicalNode{
 		Id:              "00",
 		ResourceVersion: "00",
-		Conditions:      255,
-		Reserved:        true,
-		MachineType:     "machineType1",
+		GeoInfo: types.NodeGeoInfo{
+			Region:            0000,
+			ResourcePartition: 0000,
+		},
+		Conditions:  255,
+		Reserved:    true,
+		MachineType: "machineType1",
 	}
 
 	testCases[0] = testCase0
@@ -59,5 +63,12 @@ func TestPersistNodes(t *testing.T) {
 	if logicalNodes[0].Id != testCases[0].Id || logicalNodes[0].ResourceVersion != testCases[0].ResourceVersion {
 		t.Error("logicalNodes[0] is : ", *logicalNodes[0])
 		t.Error("testCases[0]    is : ", *testCases[0])
+	}
+
+	if logicalNodes[0].GeoInfo.Region != testCases[0].GeoInfo.Region || logicalNodes[0].GeoInfo.ResourcePartition != testCases[0].GeoInfo.ResourcePartition {
+		t.Error("logicalNodes[0].GeoInfo.Region is : ", logicalNodes[0].GeoInfo.Region)
+		t.Error("testCases[0].GeoInfo.Region    is : ", testCases[0].GeoInfo.Region)
+		t.Error("logicalNodes[0].GeoInfo.ResourcePartition is : ", logicalNodes[0].GeoInfo.ResourcePartition)
+		t.Error("testCases[0].GeoInfo.ResourcePartition    is : ", testCases[0].GeoInfo.ResourcePartition)
 	}
 }

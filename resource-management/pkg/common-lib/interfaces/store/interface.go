@@ -27,7 +27,8 @@ type NodeStoreStatus struct {
 	VirtualNodeNumPerRP int
 
 	// Latest resource version map
-	CurrentResourceVerions types.ResourceVersionMap
+	//CurrentResourceVerions types.ResourceVersionMap
+	CurrentResourceVerions types.ResourceVersionMapInt
 }
 
 func (nsStatus *NodeStoreStatus) GetKey() string {

@@ -10,12 +10,15 @@ import (
 	"global-resource-service/resource-management/pkg/common-lib/types"
 
 	"github.com/go-redis/redis/v8"
+	jsoniter "github.com/json-iterator/go"
 )
 
 type Goredis struct {
 	client *redis.Client
 	ctx    context.Context
 }
+
+var jsonV = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // Initialize Redis Client
 //
@@ -112,7 +115,7 @@ func (gr *Goredis) PersistNodes(logicalNodes []*types.LogicalNode) bool {
 // Use Redis data type - String to store Node Store Status
 //
 func (gr *Goredis) PersistNodeStoreStatus(nodeStoreStatus *store.NodeStoreStatus) bool {
-	nodeStoreStatusBytes, err := json.Marshal(nodeStoreStatus)
+	nodeStoreStatusBytes, err := jsonV.Marshal(nodeStoreStatus)
 
 	if err != nil {
 		klog.Errorf("Error from JSON Marshal for Node Store Status:", err)
@@ -132,7 +135,7 @@ func (gr *Goredis) PersistNodeStoreStatus(nodeStoreStatus *store.NodeStoreStatus
 // Use Redis data type - String to store Virtual Node Assignment
 //
 func (gr *Goredis) PersistVirtualNodesAssignments(virtualNodeAssignment *store.VirtualNodeAssignment) bool {
-	virtualNodeAssignmentBytes, err := json.Marshal(virtualNodeAssignment)
+	virtualNodeAssignmentBytes, err := jsonV.Marshal(virtualNodeAssignment)
 
 	if err != nil {
 		klog.Errorf("Error from JSON Marshal for Virtual Node Assignment:", err)
@@ -187,9 +190,10 @@ func (gr *Goredis) GetNodes() []*types.LogicalNode {
 // Get Node Store Status
 //
 func (gr *Goredis) GetNodeStoreStatus() *store.NodeStoreStatus {
+
 	var nodeStoreStatus *store.NodeStoreStatus
 
-	value, err := gr.client.Get(gr.ctx, nodeStoreStatus.GetKey()).Result()
+	value, err := gr.client.Get(gr.ctx, nodeStoreStatus.GetKey()).Bytes()
 
 	if err != nil {
 		klog.Errorf("Error to get NodeStoreStatus from Redis Store:", err)
@@ -197,8 +201,7 @@ func (gr *Goredis) GetNodeStoreStatus() *store.NodeStoreStatus {
 	}
 
 	if err != redis.Nil {
-		bytes := []byte(value)
-		err = json.Unmarshal(bytes, &nodeStoreStatus)
+		err = jsonV.Unmarshal(value, &nodeStoreStatus)
 
 		if err != nil {
 			klog.Errorf("Error from JSON Unmarshal for NodeStoreStatus:", err)
@@ -212,9 +215,10 @@ func (gr *Goredis) GetNodeStoreStatus() *store.NodeStoreStatus {
 // Get Virtual Nodes Assignments
 //
 func (gr *Goredis) GetVirtualNodesAssignments() *store.VirtualNodeAssignment {
+
 	var virtualNodeAssignment *store.VirtualNodeAssignment
 
-	value, err := gr.client.Get(gr.ctx, virtualNodeAssignment.GetKey()).Result()
+	value, err := gr.client.Get(gr.ctx, virtualNodeAssignment.GetKey()).Bytes()
 
 	if err != nil {
 		klog.Errorf("Error to get VirtualNodeAssignment from Redis Store:", err)
@@ -222,8 +226,7 @@ func (gr *Goredis) GetVirtualNodesAssignments() *store.VirtualNodeAssignment {
 	}
 
 	if err != redis.Nil {
-		bytes := []byte(value)
-		err = json.Unmarshal(bytes, &virtualNodeAssignment)
+		err = jsonV.Unmarshal(value, &virtualNodeAssignment)
 
 		if err != nil {
 			klog.Errorf("Error from JSON Unmarshal for VirtualNodeAssignment:", err)

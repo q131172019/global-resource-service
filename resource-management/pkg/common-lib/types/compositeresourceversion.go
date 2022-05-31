@@ -11,6 +11,7 @@ type CompositeResourceVersion struct {
 }
 
 // Map from (regionId, ResourcePartitionId) to resourceVersion
+type ResourceVersionMapInt map[int]uint64
 type ResourceVersionMap map[location.Location]uint64
 
 func (rvs *ResourceVersionMap) Copy() ResourceVersionMap {

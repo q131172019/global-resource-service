@@ -1,11 +1,12 @@
 package redis
 
 import (
+	"reflect"
+	"testing"
+
 	"global-resource-service/resource-management/pkg/common-lib/interfaces/store"
 	"global-resource-service/resource-management/pkg/common-lib/types"
 	"global-resource-service/resource-management/pkg/common-lib/types/location"
-	"reflect"
-	"testing"
 )
 
 var GR *Goredis
